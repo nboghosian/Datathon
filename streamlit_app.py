@@ -72,10 +72,18 @@ Aplicação no Streamlit para simular vagas e recomendar candidatos.
 ---
 
 ## 🏁 **Conclusão**  
-O projeto demonstra como **Machine Learning** pode transformar o recrutamento, tornando-o mais eficiente, justo e escalável, contribuindo com a modernização do setor de Recursos Humanos.
-
+O desenvolvimento deste projeto demonstra como a aplicação de técnicas de Machine Learning pode transformar processos de recrutamento, tornando-os mais eficientes, precisos e escaláveis. 
+Durante os testes, o uso de um threshold de 0.3 apresentou um comportamento alinhado ao objetivo do RH: maximizar o recall, ou seja, garantir que o maior número possível de bons candidatos não fosse descartado. Com esse limiar, o modelo priorizou ser mais sensível na identificação de perfis com aderência às vagas, ainda que, como contrapartida, haja um aumento na taxa de falsos positivos. Essa decisão é coerente com processos seletivos, onde um volume um pouco maior de perfis pode ser analisado manualmente, desde que os melhores talentos não sejam perdidos.
+O modelo final, utilizando o XGBoost, apresentou resultados aceitáveis, sobretudo nas métricas de recall e F1-score, quando comparado aos modelos base de Regressão Logística e Random Forest. Além disso, o desenvolvimento da interface em Streamlit trouxe uma camada de acessibilidade e interatividade que permite aos recrutadores simular diferentes cenários de vagas, filtrando por critérios como localização (cidade/estado), senioridade e outros fatores relevantes.
 ---
 
+## ⭐ **Resultado Prático**
+A solução desenvolvida já permite à Decision reduzir tempo de triagem, aumentar assertividade na pré-seleção e garantir mais padronização no processo de matching entre vagas e candidatos.
+
+Ao final, a proposta demonstra a viabilidade técnica, além de abrir portas para uma jornada de transformação digital no setor de Recursos Humanos.
+
+
+---
 ## 📚 **Referências**  
 - [Huang, M. H. et al. - The Feeling Economy](https://www.researchgate.net/publication/348593461_The_Feeling_Economy_How_Artificial_Intelligence_Is_Creating_the_Era_of_Empathy)  
 - [TI Inside - Brasil aposta em IA, 2025](https://tiinside.com.br/12/03/2025/brasil-e-o-pais-que-mais-aposta-em-ai-revela-pesquisa-da-sap)  
