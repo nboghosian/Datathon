@@ -62,6 +62,13 @@ def calcular_match_ingles(vaga, candidato):
 def gerar_variaveis_match(df_candidatos, vaga):
     df = df_candidatos.copy()
 
+    # Padronizar nomes de colunas (resolver problemas de _x e _y)
+    df = df_candidatos.rename(columns={
+        'nivel_ingles_x': 'nivel_ingles',
+        'nivel_academico_x': 'nivel_academico'
+    }).copy()
+    
+
     # Texto para perfil
     df['perfil_candidato'] = df['titulo_profissional'].fillna('') + ' ' + df['objetivo_profissional'].fillna('')
 
@@ -83,13 +90,13 @@ def gerar_variaveis_match(df_candidatos, vaga):
 
     # Matches de inglês e acadêmico
     df['delta_ingles'] = df.apply(lambda x: calcular_delta_ingles(
-        vaga['nivel_ingles_y'], x['nivel_ingles_x']
+        vaga['nivel_ingles_y'], x['nivel_ingles']
     ), axis=1)
 
     df['match_ingles'] = (df['delta_ingles'] >= 0).astype(int)
 
     df['delta_academico'] = df.apply(lambda x: calcular_delta_academico(
-        vaga['nivel_academico_y'], x['nivel_academico_x']
+        vaga['nivel_academico_y'], x['nivel_academico']
     ), axis=1)
 
     df['match_nivel_academico'] = (df['delta_academico'] >= 0).astype(int)
