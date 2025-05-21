@@ -16,7 +16,7 @@ df_candidatos = pd.read_csv('df_candidatos_tratado.csv')
 # =======================
 # Cabeçalho com imagem
 # =======================
-
+st.image("post-rs.jpg", use_column_width=True)
 st.title("🔍 Recomendação Inteligente de Candidatos com IA")
 
 # =======================
