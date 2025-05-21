@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 from modelo import gerar_variaveis_match
 
-# 🔹 Carregar modelo e dados
+# Carregar modelo e dados
 modelo = joblib.load('modelo_xgb_final.pkl')
 colunas_modelo = joblib.load('colunas_modelo.pkl')
 df_candidatos = pd.read_csv('df_candidatos_tratado.csv')
@@ -12,7 +12,7 @@ st.set_page_config(page_title="Recomendação de Candidatos", layout="wide")
 
 st.title("🔍 Recomendação de Candidatos para Vaga")
 
-# 🔸 Inputs da vaga
+# Inputs da vaga
 st.subheader("📄 Dados da Vaga")
 
 titulo_vaga = st.text_input("Título da Vaga")
@@ -51,12 +51,12 @@ nivel_ingles = st.selectbox(
 
 local_vaga = st.text_input("Local da Vaga (Cidade, Estado) - Ex.: São Paulo, São Paulo")
 
-# 🔸 Filtros Geográficos
+#  Filtros Geográficos
 st.subheader("🎯 Filtros de Localização")
 filtro_local = st.checkbox('✅ Mostrar apenas candidatos da mesma **CIDADE**')
 filtro_estado = st.checkbox('✅ Mostrar apenas candidatos do mesmo **ESTADO**')
 
-# 🔸 Montar dicionário da vaga
+# Montar dicionário da vaga
 vaga = {
     'titulo_vaga': titulo_vaga,
     'competencia_tecnicas_e_comportamentais': competencias,
@@ -73,20 +73,20 @@ if st.button("🔍 Buscar Candidatos"):
     df_match = gerar_variaveis_match(df_candidatos, vaga)
 
     try:
-        # 🔸 Extrair cidade e estado da vaga
+        # Extrair cidade e estado da vaga
         cidade_vaga = vaga['local_vaga'].split(",")[0].strip().lower()
         estado_vaga = vaga['local_vaga'].split(",")[1].strip().lower()
 
-        # 🔸 Extrair cidade e estado dos candidatos
+        # Extrair cidade e estado dos candidatos
         df_match[['cidade_candidato', 'estado_candidato']] = df_match['local'].str.split(",", n=1, expand=True)
         df_match['cidade_candidato'] = df_match['cidade_candidato'].str.strip().str.lower()
         df_match['estado_candidato'] = df_match['estado_candidato'].str.strip().str.lower()
 
-        # 🔸 Aplicar filtro de cidade
+        # Aplicar filtro de cidade
         if filtro_local:
             df_match = df_match[df_match['cidade_candidato'] == cidade_vaga]
 
-        # 🔸 Aplicar filtro de estado
+        # Aplicar filtro de estado
         if filtro_estado:
             df_match = df_match[df_match['estado_candidato'] == estado_vaga]
 
@@ -94,7 +94,7 @@ if st.button("🔍 Buscar Candidatos"):
     except Exception:
         st.warning("⚠️ Verifique se o campo 'Local da vaga' foi preenchido corretamente no formato 'Cidade, Estado'.")
 
-    # 🔸 Selecionar variáveis usadas no modelo
+    # Selecionar variáveis usadas no modelo
     X = df_match[[
         'area_atuacao_grupo_desenvolvimento',
         'area_atuacao_grupo_governanca',
@@ -116,29 +116,29 @@ if st.button("🔍 Buscar Candidatos"):
         'match_local'
     ]]
 
-    # 🔸 Alinhar colunas com o modelo treinado
+    # Alinhar colunas com o modelo treinado
     X = X.reindex(columns=colunas_modelo, fill_value=0)
 
-    # 🔸 Predição de probabilidade
+    # Predição de probabilidade
     proba = modelo.predict_proba(X)[:, 1]
     df_match['prob_contratacao'] = proba
 
-    # 🔥 Threshold fixo
+    # Threshold fixo
     threshold = 0.4
 
     # Aplicar threshold
     df_match['aprovado'] = (df_match['prob_contratacao'] >= threshold).astype(int)
 
-    # 🔸 Filtrar os candidatos aprovados
+    # Filtrar os candidatos aprovados
     resultado = df_match[df_match['aprovado'] == 1].copy()
 
-    # 🔸 Ordenar por maior probabilidade
+    # Ordenar por maior probabilidade
     resultado = resultado.sort_values(by='prob_contratacao', ascending=False)
 
-    # 🔸 Remover duplicatas
+    # Remover duplicatas
     resultado = resultado.drop_duplicates(subset='codigo_candidato')
 
-    # 🔸 Mostrar resultado
+    # Mostrar resultado
     st.subheader("✅ Candidatos recomendados:")
     st.dataframe(
         resultado[['codigo_candidato', 'titulo_profissional', 'conhecimentos_tecnicos', 'local', 'prob_contratacao']].reset_index(drop=True)
