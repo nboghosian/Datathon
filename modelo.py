@@ -27,15 +27,32 @@ def calcular_match_local(vaga_local, cand_local):
 # Match de nível acadêmico
 def calcular_delta_academico(vaga, candidato):
     mapa = {
-        "ensino médio": 1,
-        "superior incompleto": 2,
-        "superior completo": 3,
-        "pós-graduação": 4,
-        "mestrado": 5,
-        "doutorado": 6
+        'ensino fundamental incompleto': 0,
+        'ensino fundamental cursando': 1,
+        'ensino fundamental completo': 2,
+        'ensino médio incompleto': 3,
+        'ensino médio cursando': 4,
+        'ensino médio completo': 5,
+        'ensino técnico incompleto': 6,
+        'ensino técnico cursando': 7,
+        'ensino técnico completo': 8,
+        'ensino superior incompleto': 9,
+        'ensino superior cursando': 10,
+        'ensino superior completo': 11,
+        'pós graduacao incompleto': 12,
+        'pós graduacao cursando': 13,
+        'pós graduacao completo': 14,
+        'mestrado cursando': 15,
+        'mestrado incompleto': 16,
+        'mestrado completo': 17,
+        'doutorado cursando': 18,
+        'doutorado incompleto': 19,
+        'doutorado completo': 20,
+        'não informado': -1,
+        '': -1
     }
-    v = mapa.get(vaga.lower(), 0)
-    c = mapa.get(candidato.lower(), 0)
+    v = mapa.get(str(vaga).strip().lower(), 0)
+    c = mapa.get(str(candidato).strip().lower(), 0)
     return c - v
 
 def calcular_match_nivel_academico(vaga, candidato):
@@ -45,14 +62,19 @@ def calcular_match_nivel_academico(vaga, candidato):
 # Match de nível de inglês (mesma lógica do acadêmico)
 def calcular_delta_ingles(vaga, candidato):
     mapa = {
-        "básico": 1,
-        "intermediário": 2,
-        "avançado": 3,
-        "fluente": 4
+        'nenhum': 0,
+        'básico': 1,
+        'intermediário': 2,
+        'técnico': 3,
+        'avançado':4,
+        'fluente': 5,
+        'não informado': -1,
+        '': -1
     }
-    v = mapa.get(vaga.lower(), 0)
-    c = mapa.get(candidato.lower(), 0)
+    v = mapa.get(str(vaga).strip().lower(), 0)
+    c = mapa.get(str(candidato).strip().lower(), 0)
     return c - v
+
 
 def calcular_match_ingles(vaga, candidato):
     delta = calcular_delta_ingles(vaga, candidato)
