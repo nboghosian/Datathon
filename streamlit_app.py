@@ -3,23 +3,32 @@ import pandas as pd
 import joblib
 from modelo import gerar_variaveis_match
 
-# ===========================
-# Configuração da Página
-# ===========================
+# =========================
+# Configuração da página
+# =========================
 st.set_page_config(page_title="Recomendação de Candidatos", layout="wide")
 
-# ===========================
-# CSS para Tema Escuro nas Abas
-# ===========================
+# =========================
+# CSS para tema escuro nas abas
+# =========================
 st.markdown(
     """
     <style>
+    body {
+        background-color: black;
+        color: white;
+    }
+    .stApp {
+        background-color: black;
+        color: white;
+    }
     .stTabs [data-baseweb="tab"] {
         background-color: #000000;
         color: white;
         border-radius: 5px;
         padding: 8px;
         margin-right: 4px;
+        font-weight: bold;
     }
     .stTabs [aria-selected="true"] {
         background-color: #333333;
@@ -30,59 +39,58 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ===========================
+# =========================
 # Cabeçalho com Imagem
-# ===========================
+# =========================
 st.image("recrutamento.jpg", use_column_width=True)
 
-# ===========================
+# =========================
 # Carregar modelo e dados
-# ===========================
+# =========================
 modelo = joblib.load('modelo_xgb_final.pkl')
 colunas_modelo = joblib.load('colunas_modelo.pkl')
 df_candidatos = pd.read_csv('df_candidatos_tratado.csv')
 
-# ===========================
+# =========================
 # Criação das Abas
-# ===========================
+# =========================
 abas = st.tabs(["📑 Introdução e Metodologia", "🔍 Recomendação de Candidatos"])
 
-# ===========================
+# =========================
 # 📑 Aba 1 - Introdução
-# ===========================
+# =========================
 with abas[0]:
     st.markdown("""
     # 📑 Introdução e Metodologia
 
-    ## 🔍 **Introdução**
+    ## 🔍 Introdução
 
-    Este projeto visa otimizar o processo de recrutamento da empresa **Decision**, aplicando **Inteligência Artificial** e **Machine Learning** para auxiliar na identificação dos candidatos ideais.
+    Este projeto foi desenvolvido para otimizar o processo de recrutamento na **Decision**, utilizando **Machine Learning** e uma aplicação interativa em **Streamlit**.
 
-    Com base nos dados históricos, desenvolvemos um modelo capaz de analisar diferentes critérios, como:
+    O objetivo é fornecer recomendações assertivas para o time de recrutamento, levando em conta:
     - Competências técnicas
-    - Aderência ao título profissional
-    - Localização (cidade e estado)
-    - Senioridade
+    - Similaridade de título profissional
+    - Aderência em localização (cidade/estado)
     - Formação acadêmica
+    - Senioridade
     - Nível de inglês
 
-    ## 🚀 **Metodologia**
+    ## 🚀 Metodologia
 
-    **Etapas realizadas:**
-    1. Coleta e exploração dos dados
-    2. Engenharia de features de "match"
-    3. Tratamento de dados (incluindo Processamento de Linguagem Natural - PLN)
-    4. Modelagem com algoritmos como **XGBoost**, **Random Forest** e **Regressão Logística**
-    5. Criação desta aplicação interativa no **Streamlit**
+    1️⃣ Coleta e tratamento dos dados históricos da Decision  
+    2️⃣ Engenharia de features de "match" (local, acadêmico, inglês, título, competências, senioridade)  
+    3️⃣ Processamento de linguagem natural (TF-IDF) para comparar textos  
+    4️⃣ Modelagem com **XGBoost**, além de Random Forest e Regressão Logística para comparação  
+    5️⃣ Deploy em aplicativo web interativo usando **Streamlit**
 
-    ## 🏁 **Conclusão**
+    ## 🏁 Conclusão
 
-    A IA aplicada ao recrutamento permite decisões mais rápidas, imparciais e escaláveis, trazendo ganhos para o RH e qualidade nas contratações.
+    A aplicação permite uma triagem mais ágil, precisa e objetiva, auxiliando o RH na tomada de decisão baseada em dados.
     """)
 
-# ===========================
+# =========================
 # 🔍 Aba 2 - Recomendação
-# ===========================
+# =========================
 with abas[1]:
     st.title("🔍 Recomendação de Candidatos para Vaga")
 
@@ -90,16 +98,19 @@ with abas[1]:
     st.subheader("📄 Dados da Vaga")
 
     titulo_vaga = st.text_input("Título da Vaga")
+
     senioridade = st.selectbox(
         "Nível", 
         ["Estagiário", "Auxiliar", "Assistente", "Júnior", "Pleno", "Sênior", 
          "Especialista", "Coordenador", "Gerente", "Supervisor"]
     )
+
     area_atuacao = st.selectbox(
         "Área de Atuação", 
         ["Desenvolvimento", "Dados", "Governança", "Relacionamento", "Infraestrutura", 
          "Negócio/ADM", "Projetos", "Qualidade", "SAP", "Segurança", "UX", "Outros"]
     )
+
     competencias = st.text_area("Competências Técnicas e Comportamentais")
 
     nivel_academico = st.selectbox(
@@ -114,7 +125,9 @@ with abas[1]:
             'Ensino Fundamental Incompleto', 'Ensino Fundamental Cursando', 'Ensino Fundamental Completo'
         ]
     )
+
     nivel_ingles = st.selectbox("Nível de Inglês", ["Básico", "Intermediário", "Avançado", "Fluente"])
+
     local_vaga = st.text_input("Local da Vaga (Cidade, Estado) - Ex: São Paulo, São Paulo")
 
     # Filtros de localização
@@ -122,7 +135,6 @@ with abas[1]:
     filtro_local = st.checkbox('✅ Mostrar apenas candidatos da mesma **CIDADE**')
     filtro_estado = st.checkbox('✅ Mostrar apenas candidatos do mesmo **ESTADO**')
 
-    # Montar dicionário da vaga
     vaga = {
         'titulo_vaga': titulo_vaga,
         'competencia_tecnicas_e_comportamentais': competencias,
@@ -136,7 +148,6 @@ with abas[1]:
     if st.button("🔍 Buscar Candidatos"):
         df_match = gerar_variaveis_match(df_candidatos, vaga)
 
-        # ===== Filtros geográficos =====
         try:
             cidade_vaga = vaga['local_vaga'].split(",")[0].strip().lower()
             estado_vaga = vaga['local_vaga'].split(",")[1].strip().lower()
@@ -153,10 +164,10 @@ with abas[1]:
         except Exception:
             st.warning("⚠️ Verifique se o campo 'Local da vaga' está no formato correto: 'Cidade, Estado'.")
 
-        # ===== Filtro por senioridade =====
+        # 🔥 Filtro obrigatório por senioridade exata
         df_match = df_match[df_match['nivel_profissional'].str.lower() == vaga['senioridade_y'].lower()]
 
-        # ===== Variáveis do modelo =====
+        # Variáveis do modelo
         X = df_match[[
             'area_atuacao_grupo_desenvolvimento',
             'area_atuacao_grupo_governanca',
@@ -180,7 +191,6 @@ with abas[1]:
 
         X = X.reindex(columns=colunas_modelo, fill_value=0)
 
-        # ===== Predição =====
         proba = modelo.predict_proba(X)[:, 1]
         df_match['prob_contratacao'] = proba
 
