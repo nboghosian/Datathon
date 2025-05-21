@@ -200,8 +200,8 @@ with tab2:
         proba = modelo.predict_proba(X)[:, 1]
         df_match['prob_contratacao'] = proba
 
-        # 🔥 Threshold fixo
-        threshold = 0.4
+        # Threshold fixo
+        threshold = 0.3
         df_match['aprovado'] = (df_match['prob_contratacao'] >= threshold).astype(int)
 
         resultado = df_match[df_match['aprovado'] == 1].copy()
