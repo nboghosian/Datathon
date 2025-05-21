@@ -16,7 +16,7 @@ df_candidatos = pd.read_csv('df_candidatos_tratado.csv')
 # =======================
 # Cabeçalho com imagem
 # =======================
-st.image("post-rs.jpg", use_column_width=True)
+st.image("https://blog.acelerato.com/wp-content/uploads/2015/02/post-rs.jpg", caption="")
 st.title("🔍 Recomendação Inteligente de Candidatos com IA")
 
 # =======================
