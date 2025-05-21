@@ -77,8 +77,6 @@ O projeto demonstra como **Machine Learning** pode transformar o recrutamento, t
 ---
 
 ## 📚 **Referências**  
-- [ALBUQUERQUE, Ellen de Lima et al. - EnGeTec, 2022](https://www.fateczl.edu.br/engetec/engetec_2022/5_EnGeTec_paper_061.pdf)  
-- [BLUMEN, Daniel; CEPELLOS, Vanessa - Cadernos EBAPE.BR, 2023](https://www.scielo.br/j/cebape/a/5GNmGM3h3Yfrg96TX8mcTMC)  
 - [Huang, M. H. et al. - The Feeling Economy](https://www.researchgate.net/publication/348593461_The_Feeling_Economy_How_Artificial_Intelligence_Is_Creating_the_Era_of_Empathy)  
 - [TI Inside - Brasil aposta em IA, 2025](https://tiinside.com.br/12/03/2025/brasil-e-o-pais-que-mais-aposta-em-ai-revela-pesquisa-da-sap)  
     """)
