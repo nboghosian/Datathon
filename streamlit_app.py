@@ -64,45 +64,47 @@ vaga = {
 
 # Ação: Buscar candidatos
 if st.button("🔍 Buscar Candidatos"):
-    # Gerar variáveis de match
+    # 🔸 Gerar variáveis de match
     df_match = gerar_variaveis_match(df_candidatos, vaga)
 
-    #  Separar variáveis numéricas e matches
-    X_numericas = df_match[[
+    # 🔸 Selecionar variáveis usadas no treino
+    X = df_match[[
+        'area_atuacao_grupo_desenvolvimento',
+        'area_atuacao_grupo_governanca',
+        'area_atuacao_grupo_infraestrutura',
+        'area_atuacao_grupo_nao_informado',
+        'area_atuacao_grupo_negocio/adm',
+        'area_atuacao_grupo_outros',
+        'area_atuacao_grupo_projetos',
+        'area_atuacao_grupo_qualidade',
+        'area_atuacao_grupo_sap',
+        'area_atuacao_grupo_seguranca',
+        'area_atuacao_grupo_ux',
+        'delta_academico',
+        'delta_ingles',
+        'delta_senioridade',
+        'match_senioridade_aceitavel',
         'match_competencias_v3',
         'match_titulo_vaga_perfil_v2',
-        'match_local',
-        'match_senioridade_aceitavel',
-        'delta_ingles',
-        'delta_academico',
-        'delta_senioridade'
+        'match_local'
     ]]
 
-    #  Selecionar colunas dummies (tipo e área)
-    colunas_dummies = [col for col in df_match.columns if (
-        col.startswith('tipo_contratacao_') or col.startswith('area_atuacao_grupo_')
-    )]
-
-    X_dummies = df_match[colunas_dummies]
-
-    # Concatenar tudo
-    X = pd.concat([X_numericas, X_dummies], axis=1)
-
-    # Reindexar para garantir que as colunas estão iguais ao treinamento
+    # 🔥 Garantir alinhamento com o modelo treinado
     X = X.reindex(columns=colunas_modelo, fill_value=0)
 
-
-    # Fazer predição
+    # ==========================
+    # 🔸 Fazer predição
+    # ==========================
     proba = modelo.predict_proba(X)[:, 1]
     df_match['prob_contratacao'] = proba
 
-    #  Ordenar pelos mais prováveis
+    # 🔸 Ordenar pelos mais prováveis
     resultado = df_match.sort_values(by='prob_contratacao', ascending=False)
 
-
-    #  Mostrar resultado
+    # ==========================
+    # 🔸 Mostrar resultado
+    # ==========================
     st.subheader("✅ Candidatos recomendados:")
     st.dataframe(
         resultado[['codigo_candidato', 'titulo_profissional', 'prob_contratacao']].reset_index(drop=True)
     )
-
