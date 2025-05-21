@@ -55,6 +55,22 @@ def calcular_delta_academico(vaga, candidato):
     c = mapa.get(str(candidato).strip().lower(), 0)
     return c - v
 
+def calcular_delta_senioridade(vaga, candidato):
+    mapa = {
+        "júnior": 1,
+        "pleno": 2,
+        "sênior": 3,
+        "especialista": 4,
+        "coordenador": 5,
+        "gerente": 6
+    }
+    v = mapa.get(str(vaga).strip().lower(), 0)
+    c = mapa.get(str(candidato).strip().lower(), 0)
+    return c - v
+
+def calcular_match_senioridade(delta):
+    return int(delta >= 0)  # 1 se o candidato tem a senioridade igual ou superior
+
 def calcular_match_nivel_academico(vaga, candidato):
     delta = calcular_delta_academico(vaga, candidato)
     return int(delta >= 0)
@@ -121,5 +137,13 @@ def gerar_variaveis_match(df_candidatos, vaga):
     ), axis=1)
 
     df['match_nivel_academico'] = (df['delta_academico'] >= 0).astype(int)
+
+    df['delta_senioridade'] = df.apply(lambda x: calcular_delta_senioridade(
+    vaga.get('nivel_profissional_y', 'nao informado'),
+    x.get('nivel_profissional', 'nao informado')
+    ), axis=1)
+
+    df['match_senioridade_aceitavel'] = df['delta_senioridade'].apply(lambda x: 1 if x <= 1 else 0)
+
 
     return df
