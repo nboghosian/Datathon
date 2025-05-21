@@ -60,8 +60,7 @@ def calcular_match_ingles(vaga, candidato):
 
 # Função principal que processa tudo
 def gerar_variaveis_match(df_candidatos, vaga):
-    df = df_candidatos.copy()
-
+ 
     # Padronizar nomes de colunas (resolver problemas de _x e _y)
     df = df_candidatos.rename(columns={
         'nivel_ingles_x': 'nivel_ingles',
