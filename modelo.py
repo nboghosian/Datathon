@@ -57,12 +57,23 @@ def calcular_delta_academico(vaga, candidato):
 
 def calcular_delta_senioridade(vaga, candidato):
     mapa = {
-        "júnior": 1,
-        "pleno": 2,
-        "sênior": 3,
-        "especialista": 4,
-        "coordenador": 5,
-        "gerente": 6
+        'aprendiz': 0,
+        'auxiliar': 1,
+        'estagiário': 2,
+        'trainee': 3,
+        'assistente': 4,
+        'técnico de nível médio': 5,
+        'júnior': 6,
+        'analista': 7,
+        'pleno': 8,
+        'especialista': 9,
+        'líder': 10,
+        'supervisor': 11,
+        'coordenador': 12,
+        'sênior': 13,
+        'gerente': 14,
+        'não informado': -1,
+        '': -1
     }
     v = mapa.get(str(vaga).strip().lower(), 0)
     c = mapa.get(str(candidato).strip().lower(), 0)
@@ -105,6 +116,8 @@ def gerar_variaveis_match(df_candidatos, vaga):
         'nivel_academico_x': 'nivel_academico'
     }).copy()
     
+    # Match de área de atuação
+    df['match_area_atuacao'] = (df['area_atuacao_grupo'] == vaga['area_atuacao_grupo']).astype(int)
 
     # Texto para perfil
     df['perfil_candidato'] = df['titulo_profissional'].fillna('') + ' ' + df['objetivo_profissional'].fillna('')
