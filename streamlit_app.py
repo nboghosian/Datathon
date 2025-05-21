@@ -21,13 +21,13 @@ st.title("🔍 Recomendação Inteligente de Candidatos com IA")
 # =======================
 # Criação das Abas
 # =======================
-tab1, tab2 = st.tabs(["📑 Introdução e Metodologia", "🎯 Recomendação de Candidatos"])
+tab1, tab2 = st.tabs(["📑 Sobre o Projeto", "🎯 Recomendação de Candidatos"])
 
 # =======================
 # Aba 1 - Introdução
 # =======================
 with tab1:
-    st.header("📑 Introdução e Metodologia")
+    st.header("📑 Sobre o Projeto")
     st.markdown("""
 ### 🔍 **Introdução**
 
