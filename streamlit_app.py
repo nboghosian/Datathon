@@ -32,14 +32,14 @@ competencias = st.text_area("Competências Técnicas e Comportamentais")
 nivel_academico = st.selectbox(
     "Nível Acadêmico",
     [
-        'Ensino Superior Completo',
-        'Ensino Fundamental Incompleto', 'Ensino Fundamental Cursando', 'Ensino Fundamental Completo',
-        'Ensino Médio Incompleto', 'Ensino Médio Cursando', 'Ensino Médio Completo',
-        'Ensino Técnico Incompleto', 'Ensino Técnico Cursando', 'Ensino Técnico Completo',
-        'Ensino Superior incompleto', 'Ensino Superior cursando',
+        'Ensino Superior Completo','Ensino Superior Incompleto', 'Ensino Superior Cursando',
         'Pós Graduação Incompleto', 'Pós Graduação Cursando', 'Pós Graduação Completo',
         'Mestrado Cursando', 'Mestrado Incompleto', 'Mestrado Completo',
         'Doutorado Cursando', 'Doutorado Incompleto', 'Doutorado Completo'
+        'Ensino Médio Incompleto', 'Ensino Médio Cursando', 'Ensino Médio Completo',
+        'Ensino Técnico Incompleto', 'Ensino Técnico Cursando', 'Ensino Técnico Completo',
+        'Ensino Fundamental Incompleto', 'Ensino Fundamental Cursando', 'Ensino Fundamental Completo'
+        
     ]
 )
 
@@ -48,7 +48,7 @@ nivel_ingles = st.selectbox(
     ["Básico", "Intermediário", "Avançado", "Fluente"]
 )
 
-local_vaga = st.text_input("Local da vaga (Cidade, Estado)")
+local_vaga = st.text_input("Local da Vaga (Cidade, Estado) - Ex: São Paulo, São Paulo")
 
 
 # 🔸 Filtros Geográficos
@@ -76,22 +76,27 @@ if st.button("🔍 Buscar Candidatos"):
     df_match = gerar_variaveis_match(df_candidatos, vaga)
 
     # 🔸 Aplicar filtros de localização
+    # 🔸 Separar cidade e estado da vaga
     try:
         cidade_vaga = vaga['local_vaga'].split(",")[0].strip().lower()
-        estado_vaga = vaga['local_vaga'].split(",")[-1].strip().lower()
+        estado_vaga = vaga['local_vaga'].split(",")[1].strip().lower()
 
+    # Criar colunas auxiliares para cidade e estado dos candidatos
+        df_match[['cidade_candidato', 'estado_candidato']] = df_match['local'].str.split(",", n=1, expand=True)
+        df_match['cidade_candidato'] = df_match['cidade_candidato'].str.strip().str.lower()
+        df_match['estado_candidato'] = df_match['estado_candidato'].str.strip().str.lower()
+
+    # 🔸 Aplicar filtro de cidade
         if filtro_local:
-            df_match = df_match[
-                df_match['local'].str.lower().str.strip() == vaga['local_vaga'].strip().lower()
-            ]
+            df_match = df_match[df_match['cidade_candidato'] == cidade_vaga]
 
+    # 🔸 Aplicar filtro de estado
         if filtro_estado:
-            df_match = df_match[
-                df_match['local'].str.lower().str.contains(estado_vaga)
-            ]
+            df_match = df_match[df_match['estado_candidato'] == estado_vaga]
 
     except Exception:
-        st.warning("⚠️ Atenção: Verifique se o campo 'Local da vaga' foi preenchido corretamente no formato 'Cidade, Estado'.")
+        st.warning("⚠️ Verifique se o campo 'Local da vaga' foi preenchido corretamente no formato 'Cidade, Estado'.")
+
 
     
 
