@@ -171,8 +171,7 @@ with tab2:
         except:
             st.warning("⚠️ Verifique se o campo 'Local da vaga' foi preenchido corretamente no formato 'Cidade, Estado'.")
 
-        # 🔸 Filtrar por senioridade exata
-        df_match = df_match[df_match['nivel_profissional'].str.lower() == vaga['senioridade_y'].lower()]
+    
 
         # 🔸 Variáveis do modelo
         X = df_match[[
