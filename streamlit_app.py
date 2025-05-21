@@ -4,7 +4,7 @@ import joblib
 from modelo import gerar_variaveis_match
 
 # Configurações da página
-st.set_page_config(page_title="Recomendação de Candidatos", layout="wide")
+st.set_page_config(page_title="Recomendação de Candidatos")
 
 # =======================
 # Carregar modelo e dados
