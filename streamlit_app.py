@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 from modelo import gerar_variaveis_match
 
-#  Carregar modelo e dados
+# Carregar modelo e dados
 modelo = joblib.load('modelo_xgb_final.pkl')
 colunas_modelo = joblib.load('colunas_modelo.pkl')  # 🔥 As colunas usadas no treino
 df_candidatos = pd.read_csv('df_candidatos_tratado.csv')
@@ -11,7 +11,6 @@ df_candidatos = pd.read_csv('df_candidatos_tratado.csv')
 st.title("🔍 Recomendação de Candidatos para Vaga")
 
 # Inputs da vaga
-
 st.subheader("📄 Dados da Vaga")
 
 titulo_vaga = st.text_input("Título da Vaga")
@@ -50,7 +49,7 @@ nivel_ingles = st.selectbox(
 local_vaga = st.text_input("Local da vaga (Cidade, Estado)")
 
 
-#  Montar dicionário da vaga
+# Montar dicionário da vaga
 vaga = {
     'titulo_vaga': titulo_vaga,
     'competencia_tecnicas_e_comportamentais': competencias,
@@ -61,11 +60,41 @@ vaga = {
     'local_vaga': local_vaga
 }
 
+# 🔍 Filtros opcionais
+st.subheader("🎯 Aplicar Filtros Geográficos")
+
+filtro_local = st.checkbox('✅ Mostrar apenas candidatos da mesma CIDADE')
+filtro_estado = st.checkbox('✅ Mostrar apenas candidatos do mesmo ESTADO')
+
+# Definir Threshold manual (ajustável)
+threshold = st.slider("Ajuste o threshold de recomendação:", 0.0, 1.0, 0.3, 0.05)
+
 
 # Ação: Buscar candidatos
 if st.button("🔍 Buscar Candidatos"):
     # 🔸 Gerar variáveis de match
     df_match = gerar_variaveis_match(df_candidatos, vaga)
+
+    # ==========================
+    # 🔸 Aplicar filtros de Localização
+    # ==========================
+    try:
+        cidade_vaga = vaga['local_vaga'].split(",")[0].strip().lower()
+        estado_vaga = vaga['local_vaga'].split(",")[-1].strip().lower()
+
+        if filtro_local:
+            df_match = df_match[
+                df_match['local'].str.lower().str.strip() == vaga['local_vaga'].strip().lower()
+            ]
+
+        if filtro_estado:
+            df_match = df_match[
+                df_match['local'].str.lower().str.contains(estado_vaga)
+            ]
+
+    except Exception:
+        st.warning("⚠️ Atenção: Verifique se o campo 'Local da vaga' foi preenchido corretamente no formato 'Cidade, Estado'.")
+
 
     # 🔸 Selecionar variáveis usadas no treino
     X = df_match[[
@@ -98,9 +127,6 @@ if st.button("🔍 Buscar Candidatos"):
     proba = modelo.predict_proba(X)[:, 1]
     df_match['prob_contratacao'] = proba
 
-    # Definir o threshold ideal
-    threshold = 0.3  # Você pode deixar fixo ou criar um st.slider para ajustar
-
     # Aplicar threshold manual
     df_match['aprovado'] = (df_match['prob_contratacao'] >= threshold).astype(int)
 
@@ -118,5 +144,5 @@ if st.button("🔍 Buscar Candidatos"):
     # ==========================
     st.subheader("✅ Candidatos recomendados:")
     st.dataframe(
-        resultado[['codigo_candidato', 'titulo_profissional','conhecimentos_tecnicos','local', 'prob_contratacao']].reset_index(drop=True)
+        resultado[['codigo_candidato', 'titulo_profissional', 'conhecimentos_tecnicos', 'local', 'prob_contratacao']].reset_index(drop=True)
     )
