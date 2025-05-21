@@ -2,13 +2,17 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Limpeza de texto
+# =====================
+#  Limpeza de texto
+# =====================
 def limpar_texto(texto):
     if pd.isna(texto):
         return ''
     return texto.lower().replace('\n', ' ').replace('.', '').strip()
 
-# Similaridade TF-IDF entre dois textos
+# =====================
+#  Similaridade TF-IDF
+# =====================
 def calcular_similaridade_tfidf(texto1, texto2):
     if not texto1 or not texto2:
         return 0.0
@@ -18,13 +22,17 @@ def calcular_similaridade_tfidf(texto1, texto2):
     similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
     return round(similarity, 3)
 
-# Match de localização
+# =====================
+#  Match de Localização
+# =====================
 def calcular_match_local(vaga_local, cand_local):
     if pd.isna(vaga_local) or pd.isna(cand_local):
         return 0
     return int(vaga_local.strip().lower() == cand_local.strip().lower())
 
-# Match de nível acadêmico
+# =====================
+#  Delta e Match Nível Acadêmico
+# =====================
 def calcular_delta_academico(vaga, candidato):
     mapa = {
         'ensino fundamental incompleto': 0,
@@ -55,6 +63,13 @@ def calcular_delta_academico(vaga, candidato):
     c = mapa.get(str(candidato).strip().lower(), 0)
     return c - v
 
+def calcular_match_nivel_academico(vaga, candidato):
+    delta = calcular_delta_academico(vaga, candidato)
+    return int(delta >= 0)
+
+# =====================
+#  Delta e Match Senioridade
+# =====================
 def calcular_delta_senioridade(vaga, candidato):
     mapa = {
         'aprendiz': 0,
@@ -80,20 +95,18 @@ def calcular_delta_senioridade(vaga, candidato):
     return c - v
 
 def calcular_match_senioridade(delta):
-    return int(delta >= 0)  # 1 se o candidato tem a senioridade igual ou superior
-
-def calcular_match_nivel_academico(vaga, candidato):
-    delta = calcular_delta_academico(vaga, candidato)
     return int(delta >= 0)
 
-# Match de nível de inglês (mesma lógica do acadêmico)
+# =====================
+#  Delta e Match Inglês
+# =====================
 def calcular_delta_ingles(vaga, candidato):
     mapa = {
         'nenhum': 0,
         'básico': 1,
         'intermediário': 2,
         'técnico': 3,
-        'avançado':4,
+        'avançado': 4,
         'fluente': 5,
         'não informado': -1,
         '': -1
@@ -102,61 +115,57 @@ def calcular_delta_ingles(vaga, candidato):
     c = mapa.get(str(candidato).strip().lower(), 0)
     return c - v
 
-
 def calcular_match_ingles(vaga, candidato):
     delta = calcular_delta_ingles(vaga, candidato)
     return int(delta >= 0)
 
-# Função principal que processa tudo
+# =====================
+# Função principal
+# =====================
 def gerar_variaveis_match(df_candidatos, vaga):
- 
-    # Padronizar nomes de colunas (resolver problemas de _x e _y)
     df = df_candidatos.rename(columns={
         'nivel_ingles_x': 'nivel_ingles',
         'nivel_academico_x': 'nivel_academico'
     }).copy()
-    
-    # Match de área de atuação
+
+    # Match de Área
     df['match_area_atuacao'] = (df['area_atuacao_grupo'] == vaga['area_atuacao_grupo']).astype(int)
 
-    # Texto para perfil
+    #  Texto para perfil
     df['perfil_candidato'] = df['titulo_profissional'].fillna('') + ' ' + df['objetivo_profissional'].fillna('')
 
-    # Matches de texto
-    df['match_competencias'] = df.apply(lambda x: calcular_similaridade_tfidf(
+    #  Matches de texto
+    df['match_competencias_v3'] = df.apply(lambda x: calcular_similaridade_tfidf(
         limpar_texto(vaga['competencia_tecnicas_e_comportamentais']),
         limpar_texto(x['conhecimentos_tecnicos'])
     ), axis=1)
 
-    df['match_titulo_vaga_perfil'] = df.apply(lambda x: calcular_similaridade_tfidf(
+    df['match_titulo_vaga_perfil_v2'] = df.apply(lambda x: calcular_similaridade_tfidf(
         limpar_texto(vaga['titulo_vaga']),
         limpar_texto(x['perfil_candidato'])
     ), axis=1)
 
-    # Matches de localização
+    #  Match de Localização
     df['match_local'] = df.apply(lambda x: calcular_match_local(
         vaga['local_vaga'], x['local']
     ), axis=1)
 
-    # Matches de inglês e acadêmico
+    #  Delta e Match de Inglês
     df['delta_ingles'] = df.apply(lambda x: calcular_delta_ingles(
         vaga['nivel_ingles_y'], x['nivel_ingles']
     ), axis=1)
-
     df['match_ingles'] = (df['delta_ingles'] >= 0).astype(int)
 
+    #  Delta e Match de Acadêmico
     df['delta_academico'] = df.apply(lambda x: calcular_delta_academico(
         vaga['nivel_academico_y'], x['nivel_academico']
     ), axis=1)
-
     df['match_nivel_academico'] = (df['delta_academico'] >= 0).astype(int)
 
+    #  Delta e Match de Senioridade
     df['delta_senioridade'] = df.apply(lambda x: calcular_delta_senioridade(
-    vaga.get('nivel_profissional_y', 'nao informado'),
-    x.get('nivel_profissional', 'nao informado')
+        vaga['senioridade_y'], x['nivel_profissional']
     ), axis=1)
-
     df['match_senioridade_aceitavel'] = df['delta_senioridade'].apply(lambda x: 1 if x <= 1 else 0)
-
 
     return df
