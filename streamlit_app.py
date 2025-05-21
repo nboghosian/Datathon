@@ -12,8 +12,30 @@ st.title("Recomendação de Candidatos para Vaga")
 # Inputs da vaga
 st.subheader("Dados da Vaga")
 titulo_vaga = st.text_input("Título da Vaga")
+senioridade = st.selectbox("Nível de Senioridade", ["Estagiário", "Auxiliar", "Assistente", , "Júnior", "Pleno", "Sênior", "Especialista", "Coordenador", "Gerente", "Supervisor"])
+area_atuacao = st.selectbox("Área de Atuação", ["Desenvolvimento", "Dados", "Governança", "Relacionamento", "Infraestrutura", "Negócio/ADM", "Projetos", "Qualidade", "SAP", "Segurança", "UX", "Outros"])
 competencias = st.text_area("Competências Técnicas e Comportamentais")
-nivel_academico = st.selectbox("Nível Acadêmico", ["Ensino Médio", "Superior Incompleto", "Superior Completo", "Pós-graduação", "Mestrado", "Doutorado"])
+nivel_academico = st.selectbox("Nível Acadêmico", ['ensino fundamental incompleto',
+    'Ensino fundamental cursando',
+    'Ensino fundamental completo',
+    'Ensino médio incompleto',
+    'Ensino médio cursando',
+    'Ensino médio completo',
+    'Ensino técnico incompleto',
+    'Ensino técnico cursando',
+    'Ensino técnico completo',
+    'Ensino superior incompleto',
+    'Ensino superior cursando',
+    'Ensino superior completo',
+    'Pós graduação incompleto',
+    'Pós graduação cursando',
+    'Pós graduação completo',
+    'Mestrado cursando',
+    'Mestrado incompleto',
+    'Mestrado completo',
+    'Doutorado cursando',
+    'Doutorado incompleto',
+    'Doutorado completo'])
 nivel_ingles = st.selectbox("Nível de Inglês", ["Básico", "Intermediário", "Avançado", "Fluente"])
 local_vaga = st.text_input("Local da vaga (Cidade, Estado)")
 
