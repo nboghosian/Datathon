@@ -1,8 +1,7 @@
-📦 #Techchallenge 4
-Trabalho final da Fase 4 - Data viz and production models
+📦 Datathon 
+Trabalho final da pós-graduação em Data Analytics da FIAP
 
 Outros links:
 
-https://colab.research.google.com/drive/1h8VVlJ512b_nhdhQiQ5LGYupaQheOpUQ?usp=sharing#scrollTo=T7_W59v2HAOp
-https://github.com/nboghosian/techchallenge4_powerbi
-http://www.ipeadata.gov.br/ExibeSerie.aspx?module=m&serid=1650971490&oper=view
+* https://colab.research.google.com/drive/1BI3NE5GqDNyK3O0lFftpRxC2QzUF-nYi?authuser=0#scrollTo=7CypiePZwQtQ
+* https://datathon-fiap-3.streamlit.app/
