@@ -98,13 +98,25 @@ if st.button("🔍 Buscar Candidatos"):
     proba = modelo.predict_proba(X)[:, 1]
     df_match['prob_contratacao'] = proba
 
-    # 🔸 Ordenar pelos mais prováveis
-    resultado = df_match.sort_values(by='prob_contratacao', ascending=False)
+    # Definir o threshold ideal
+    threshold = 0.3  # Você pode deixar fixo ou criar um st.slider para ajustar
+
+    # Aplicar threshold manual
+    df_match['aprovado'] = (df_match['prob_contratacao'] >= threshold).astype(int)
+
+    # Filtrar os candidatos aprovados
+    resultado = df_match[df_match['aprovado'] == 1].copy()
+
+    # Ordenar por maior probabilidade
+    resultado = resultado.sort_values(by='prob_contratacao', ascending=False)
+
+    # Remover candidatos duplicados (caso tenha)
+    resultado = resultado.drop_duplicates(subset='codigo_candidato')
 
     # ==========================
     # 🔸 Mostrar resultado
     # ==========================
     st.subheader("✅ Candidatos recomendados:")
     st.dataframe(
-        resultado[['codigo_candidato', 'titulo_profissional', 'prob_contratacao']].reset_index(drop=True)
+        resultado[['codigo_candidato', 'titulo_profissional','conhecimentos_tecnicos','local', 'prob_contratacao']].reset_index(drop=True)
     )
