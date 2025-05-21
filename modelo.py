@@ -95,7 +95,7 @@ def calcular_delta_senioridade(vaga, candidato):
     return c - v
 
 def calcular_match_senioridade(delta):
-    return int(delta >= 0)
+    return int(delta == 0)
 
 # =====================
 #  Delta e Match Inglês
