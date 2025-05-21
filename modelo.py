@@ -2,17 +2,13 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# =====================
 #  Limpeza de texto
-# =====================
 def limpar_texto(texto):
     if pd.isna(texto):
         return ''
     return texto.lower().replace('\n', ' ').replace('.', '').strip()
 
-# =====================
 #  Similaridade TF-IDF
-# =====================
 def calcular_similaridade_tfidf(texto1, texto2):
     if not texto1 or not texto2:
         return 0.0
@@ -22,17 +18,13 @@ def calcular_similaridade_tfidf(texto1, texto2):
     similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
     return round(similarity, 3)
 
-# =====================
 #  Match de Localização
-# =====================
 def calcular_match_local(vaga_local, cand_local):
     if pd.isna(vaga_local) or pd.isna(cand_local):
         return 0
     return int(vaga_local.strip().lower() == cand_local.strip().lower())
 
-# =====================
 #  Delta e Match Nível Acadêmico
-# =====================
 def calcular_delta_academico(vaga, candidato):
     mapa = {
         'ensino fundamental incompleto': 0,
@@ -67,9 +59,7 @@ def calcular_match_nivel_academico(vaga, candidato):
     delta = calcular_delta_academico(vaga, candidato)
     return int(delta >= 0)
 
-# =====================
 #  Delta e Match Senioridade
-# =====================
 def calcular_delta_senioridade(vaga, candidato):
     mapa = {
         'aprendiz': 0,
@@ -97,9 +87,7 @@ def calcular_delta_senioridade(vaga, candidato):
 def calcular_match_senioridade(delta):
     return int(delta == 0)
 
-# =====================
 #  Delta e Match Inglês
-# =====================
 def calcular_delta_ingles(vaga, candidato):
     mapa = {
         'nenhum': 0,
@@ -119,9 +107,7 @@ def calcular_match_ingles(vaga, candidato):
     delta = calcular_delta_ingles(vaga, candidato)
     return int(delta >= 0)
 
-# =====================
 # Função principal
-# =====================
 def gerar_variaveis_match(df_candidatos, vaga):
     df = df_candidatos.rename(columns={
         'nivel_ingles_x': 'nivel_ingles',
