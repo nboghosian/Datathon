@@ -16,7 +16,6 @@ df_candidatos = pd.read_csv('df_candidatos_tratado.csv')
 # =======================
 # Cabeçalho com imagem
 # =======================
-st.image("https://blog.acelerato.com/wp-content/uploads/2015/02/post-rs.jpg", caption="")
 st.title("🔍 Recomendação Inteligente de Candidatos com IA")
 
 # =======================
@@ -28,6 +27,7 @@ tab1, tab2 = st.tabs(["📑 Introdução e Metodologia", "🎯 Recomendação de
 # Aba 1 - Introdução
 # =======================
 with tab1:
+    st.image("https://blog.acelerato.com/wp-content/uploads/2015/02/post-rs.jpg", caption="")
     st.header("📑 Introdução e Metodologia")
     st.markdown("""
 ## 🔍 **Introdução**
