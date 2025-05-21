@@ -93,10 +93,7 @@ if st.button("🔍 Buscar Candidatos"):
     except Exception:
         st.warning("⚠️ Atenção: Verifique se o campo 'Local da vaga' foi preenchido corretamente no formato 'Cidade, Estado'.")
 
-    # 🔸 Filtro de senioridade EXATA
-    df_match = df_match[
-        df_match['nivel_profissional'].str.lower().str.strip() == vaga['senioridade_y'].lower().strip()
-    ]
+    
 
     # 🔸 Selecionar as variáveis do modelo
     X = df_match[[
