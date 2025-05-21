@@ -16,7 +16,7 @@ st.subheader("📄 Dados da Vaga")
 titulo_vaga = st.text_input("Título da Vaga")
 
 senioridade = st.selectbox(
-    "Nível de Senioridade", 
+    "Nível", 
     ["Estagiário", "Auxiliar", "Assistente", "Júnior", "Pleno", "Sênior", 
      "Especialista", "Coordenador", "Gerente", "Supervisor"]
 )
@@ -32,13 +32,14 @@ competencias = st.text_area("Competências Técnicas e Comportamentais")
 nivel_academico = st.selectbox(
     "Nível Acadêmico",
     [
-        'Ensino fundamental incompleto', 'Ensino fundamental cursando', 'Ensino fundamental completo',
-        'Ensino médio incompleto', 'Ensino médio cursando', 'Ensino médio completo',
-        'Ensino técnico incompleto', 'Ensino técnico cursando', 'Ensino técnico completo',
-        'Ensino superior incompleto', 'Ensino superior cursando', 'Ensino superior completo',
-        'Pós graduação incompleto', 'Pós graduação cursando', 'Pós graduação completo',
-        'Mestrado cursando', 'Mestrado incompleto', 'Mestrado completo',
-        'Doutorado cursando', 'Doutorado incompleto', 'Doutorado completo'
+        'Ensino Superior Completo',
+        'Ensino Fundamental Incompleto', 'Ensino Fundamental Cursando', 'Ensino Fundamental Completo',
+        'Ensino Médio Incompleto', 'Ensino Médio Cursando', 'Ensino Médio Completo',
+        'Ensino Técnico Incompleto', 'Ensino Técnico Cursando', 'Ensino Técnico Completo',
+        'Ensino Superior incompleto', 'Ensino Superior cursando',
+        'Pós Graduação Incompleto', 'Pós Graduação Cursando', 'Pós Graduação Completo',
+        'Mestrado Cursando', 'Mestrado Incompleto', 'Mestrado Completo',
+        'Doutorado Cursando', 'Doutorado Incompleto', 'Doutorado Completo'
     ]
 )
 
@@ -92,6 +93,10 @@ if st.button("🔍 Buscar Candidatos"):
     except Exception:
         st.warning("⚠️ Atenção: Verifique se o campo 'Local da vaga' foi preenchido corretamente no formato 'Cidade, Estado'.")
 
+    # 🔸 Filtro de senioridade EXATA
+    df_match = df_match[
+        df_match['nivel_profissional'].str.lower().str.strip() == vaga['senioridade_y'].lower().strip()
+    ]
 
     # 🔸 Selecionar as variáveis do modelo
     X = df_match[[
