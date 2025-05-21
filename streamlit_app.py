@@ -3,10 +3,12 @@ import pandas as pd
 import joblib
 from modelo import gerar_variaveis_match
 
-# Carregar modelo e dados
+# 🔹 Carregar modelo e dados
 modelo = joblib.load('modelo_xgb_final.pkl')
-colunas_modelo = joblib.load('colunas_modelo.pkl')  # As colunas usadas no treino
+colunas_modelo = joblib.load('colunas_modelo.pkl')
 df_candidatos = pd.read_csv('df_candidatos_tratado.csv')
+
+st.set_page_config(page_title="Recomendação de Candidatos", layout="wide")
 
 st.title("🔍 Recomendação de Candidatos para Vaga")
 
@@ -16,14 +18,14 @@ st.subheader("📄 Dados da Vaga")
 titulo_vaga = st.text_input("Título da Vaga")
 
 senioridade = st.selectbox(
-    "Nível", 
-    ["Estagiário", "Auxiliar", "Assistente", "Júnior", "Pleno", "Sênior", 
+    "Nível de Senioridade",
+    ["Estagiário", "Auxiliar", "Assistente", "Júnior", "Pleno", "Sênior",
      "Especialista", "Coordenador", "Gerente", "Supervisor"]
 )
 
 area_atuacao = st.selectbox(
-    "Área de Atuação", 
-    ["Desenvolvimento", "Dados", "Governança", "Relacionamento", "Infraestrutura", 
+    "Área de Atuação",
+    ["Desenvolvimento", "Dados", "Governança", "Relacionamento", "Infraestrutura",
      "Negócio/ADM", "Projetos", "Qualidade", "SAP", "Segurança", "UX", "Outros"]
 )
 
@@ -32,31 +34,27 @@ competencias = st.text_area("Competências Técnicas e Comportamentais")
 nivel_academico = st.selectbox(
     "Nível Acadêmico",
     [
-        'Ensino Superior Completo','Ensino Superior Incompleto', 'Ensino Superior Cursando',
+        'Ensino Superior Completo', 'Ensino Superior Incompleto', 'Ensino Superior Cursando',
         'Pós Graduação Incompleto', 'Pós Graduação Cursando', 'Pós Graduação Completo',
         'Mestrado Cursando', 'Mestrado Incompleto', 'Mestrado Completo',
-        'Doutorado Cursando', 'Doutorado Incompleto', 'Doutorado Completo'
+        'Doutorado Cursando', 'Doutorado Incompleto', 'Doutorado Completo',
         'Ensino Médio Incompleto', 'Ensino Médio Cursando', 'Ensino Médio Completo',
         'Ensino Técnico Incompleto', 'Ensino Técnico Cursando', 'Ensino Técnico Completo',
         'Ensino Fundamental Incompleto', 'Ensino Fundamental Cursando', 'Ensino Fundamental Completo'
-        
     ]
 )
 
 nivel_ingles = st.selectbox(
-    "Nível de Inglês", 
+    "Nível de Inglês",
     ["Básico", "Intermediário", "Avançado", "Fluente"]
 )
 
-local_vaga = st.text_input("Local da Vaga (Cidade, Estado) - Ex: São Paulo, São Paulo")
-
+local_vaga = st.text_input("Local da Vaga (Cidade, Estado) - Ex.: São Paulo, São Paulo")
 
 # 🔸 Filtros Geográficos
 st.subheader("🎯 Filtros de Localização")
-
 filtro_local = st.checkbox('✅ Mostrar apenas candidatos da mesma **CIDADE**')
 filtro_estado = st.checkbox('✅ Mostrar apenas candidatos do mesmo **ESTADO**')
-
 
 # 🔸 Montar dicionário da vaga
 vaga = {
@@ -69,38 +67,34 @@ vaga = {
     'local_vaga': local_vaga
 }
 
-
 # 🔍 Buscar candidatos
 if st.button("🔍 Buscar Candidatos"):
-    # 🔸 Gerar variáveis de match
+    # Gerar variáveis de match
     df_match = gerar_variaveis_match(df_candidatos, vaga)
 
-    # 🔸 Aplicar filtros de localização
-    # 🔸 Separar cidade e estado da vaga
     try:
+        # 🔸 Extrair cidade e estado da vaga
         cidade_vaga = vaga['local_vaga'].split(",")[0].strip().lower()
         estado_vaga = vaga['local_vaga'].split(",")[1].strip().lower()
 
-    # Criar colunas auxiliares para cidade e estado dos candidatos
+        # 🔸 Extrair cidade e estado dos candidatos
         df_match[['cidade_candidato', 'estado_candidato']] = df_match['local'].str.split(",", n=1, expand=True)
         df_match['cidade_candidato'] = df_match['cidade_candidato'].str.strip().str.lower()
         df_match['estado_candidato'] = df_match['estado_candidato'].str.strip().str.lower()
 
-    # 🔸 Aplicar filtro de cidade
+        # 🔸 Aplicar filtro de cidade
         if filtro_local:
             df_match = df_match[df_match['cidade_candidato'] == cidade_vaga]
 
-    # 🔸 Aplicar filtro de estado
+        # 🔸 Aplicar filtro de estado
         if filtro_estado:
             df_match = df_match[df_match['estado_candidato'] == estado_vaga]
 
+        
     except Exception:
         st.warning("⚠️ Verifique se o campo 'Local da vaga' foi preenchido corretamente no formato 'Cidade, Estado'.")
 
-
-    
-
-    # 🔸 Selecionar as variáveis do modelo
+    # 🔸 Selecionar variáveis usadas no modelo
     X = df_match[[
         'area_atuacao_grupo_desenvolvimento',
         'area_atuacao_grupo_governanca',
@@ -122,10 +116,10 @@ if st.button("🔍 Buscar Candidatos"):
         'match_local'
     ]]
 
-    # 🔥 Garantir que as colunas estão alinhadas com o modelo
+    # 🔸 Alinhar colunas com o modelo treinado
     X = X.reindex(columns=colunas_modelo, fill_value=0)
 
-    # 🔸 Fazer predição
+    # 🔸 Predição de probabilidade
     proba = modelo.predict_proba(X)[:, 1]
     df_match['prob_contratacao'] = proba
 
@@ -141,7 +135,7 @@ if st.button("🔍 Buscar Candidatos"):
     # 🔸 Ordenar por maior probabilidade
     resultado = resultado.sort_values(by='prob_contratacao', ascending=False)
 
-    # 🔸 Remover candidatos duplicados (caso tenha)
+    # 🔸 Remover duplicatas
     resultado = resultado.drop_duplicates(subset='codigo_candidato')
 
     # 🔸 Mostrar resultado
